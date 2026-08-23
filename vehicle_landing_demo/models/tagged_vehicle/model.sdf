@@ -1,0 +1,330 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="ugv_0">
+    <static>false</static>
+    <link name="body">
+      <inertial>
+        <pose>0 0 0.75 0 0 0</pose>
+        <mass>1200</mass>
+        <inertia>
+          <ixx>586</ixx><iyy>2175</iyy><izz>2410</izz>
+          <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <visual name="car_body">
+        <pose>0 0 0 0 0 -1.5707963</pose>
+        <geometry><mesh><uri>model://suv/meshes/suv.obj</uri><scale>0.06 0.06 0.06</scale></mesh></geometry>
+      </visual>
+      <!-- White landing plate makes the single tag easy to see from above. -->
+      <visual name="landing_plate">
+        <pose>0 0 2.20 0 0 0</pose>
+        <geometry><box><size>1.80 1.80 0.06</size></box></geometry>
+        <material><ambient>1 1 1 1</ambient><diffuse>1 1 1 1</diffuse></material>
+      </visual>
+      <!-- Physical landing surface: without this, the vehicle is visually
+           solid but Gazebo lets the drone fall through the roof. -->
+      <collision name="landing_plate_collision">
+        <pose>0 0 2.20 0 0 0</pose>
+        <geometry><box><size>1.80 1.80 0.06</size></box></geometry>
+        <surface>
+          <friction><ode><mu>1.2</mu><mu2>1.2</mu2></ode></friction>
+          <contact><ode><kp>1000000</kp><kd>100</kd></ode></contact>
+        </surface>
+      </collision>
+      <!-- AprilTag 36h11 ID 0 built from solid geometry, independent of textures. -->
+      <visual name="tag_black_0_0">
+        <pose>0.70 0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_0_1">
+        <pose>0.70 0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_0_2">
+        <pose>0.70 0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_0_3">
+        <pose>0.70 0.10 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_0_4">
+        <pose>0.70 -0.10 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_0_5">
+        <pose>0.70 -0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_0_6">
+        <pose>0.70 -0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_0_7">
+        <pose>0.70 -0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_1_0">
+        <pose>0.50 0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_1_3">
+        <pose>0.50 0.10 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_1_5">
+        <pose>0.50 -0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_1_7">
+        <pose>0.50 -0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_2_0">
+        <pose>0.30 0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_2_1">
+        <pose>0.30 0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_2_5">
+        <pose>0.30 -0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_2_7">
+        <pose>0.30 -0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_3_0">
+        <pose>0.10 0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_3_1">
+        <pose>0.10 0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_3_4">
+        <pose>0.10 -0.10 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_3_5">
+        <pose>0.10 -0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_3_6">
+        <pose>0.10 -0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_3_7">
+        <pose>0.10 -0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_4_0">
+        <pose>-0.10 0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_4_2">
+        <pose>-0.10 0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_4_4">
+        <pose>-0.10 -0.10 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_4_5">
+        <pose>-0.10 -0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_4_6">
+        <pose>-0.10 -0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_4_7">
+        <pose>-0.10 -0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_5_0">
+        <pose>-0.30 0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_5_1">
+        <pose>-0.30 0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_5_3">
+        <pose>-0.30 0.10 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_5_6">
+        <pose>-0.30 -0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_5_7">
+        <pose>-0.30 -0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_6_0">
+        <pose>-0.50 0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_6_1">
+        <pose>-0.50 0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_6_2">
+        <pose>-0.50 0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_6_3">
+        <pose>-0.50 0.10 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_6_5">
+        <pose>-0.50 -0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_6_6">
+        <pose>-0.50 -0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_6_7">
+        <pose>-0.50 -0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_7_0">
+        <pose>-0.70 0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_7_1">
+        <pose>-0.70 0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_7_2">
+        <pose>-0.70 0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_7_3">
+        <pose>-0.70 0.10 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_7_4">
+        <pose>-0.70 -0.10 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_7_5">
+        <pose>-0.70 -0.30 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_7_6">
+        <pose>-0.70 -0.50 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <visual name="tag_black_7_7">
+        <pose>-0.70 -0.70 2.231 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry><box><size>0.198 0.198 0.012</size></box></geometry>
+        <material><ambient>0 0 0 1</ambient><diffuse>0 0 0 1</diffuse></material>
+      </visual>
+      <collision name="body_collision">
+        <pose>0 0 0.75 0 0 0</pose>
+        <geometry><box><size>4.5 1.9 1.5</size></box></geometry>
+        <surface><friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction></surface>
+      </collision>
+    </link>
+  </model>
+</sdf>

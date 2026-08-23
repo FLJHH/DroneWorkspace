@@ -1,0 +1,60 @@
+# Local agent/editor metadata
+/.agents/
+/.codex/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# External workspaces linked into this research workspace
+/PX4_Firmware
+/XTDrone
+/catkin_src
+
+# ROS, Gazebo and PX4 runtime artifacts
+.sim_ros_logs/
+**/.sim_ros_logs/
+*.bag
+*.bag.active
+*.ulg
+*.log
+ros_logs/
+
+# Catkin/CMake/build products
+build/
+devel/
+install/
+log/
+.catkin_tools/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Training/download caches and generated run directories
+.cache/
+runs/
+wandb/
+*.tmp
+*.temp
+*.bak
+*.part
+/yolo11n.pt
+
+# Raw ROS process logs captured beside curated experiment outputs.
+# Formal experiments/*.csv, logs/static_*.{csv,json}, and plots/*.png remain included.
+/vehicle_landing_demo/experiments/logs/ros/

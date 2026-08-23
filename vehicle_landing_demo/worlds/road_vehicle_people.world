@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="default">
+    <physics name="default_physics" type="ode">
+      <gravity>0 0 -9.8066</gravity>
+      <max_step_size>0.002</max_step_size>
+      <real_time_update_rate>500</real_time_update_rate>
+    </physics>
+    <include><uri>model://sun</uri></include>
+    <include><uri>model://ground_plane</uri></include>
+
+    <!-- Asphalt road and lane markings. The target car is stationary at x=8. -->
+    <model name="road">
+      <static>true</static>
+      <link name="road_link">
+        <collision name="road_collision">
+          <pose>0 0 0.025 0 0 0</pose>
+          <geometry><box><size>60 9 0.05</size></box></geometry>
+        </collision>
+        <visual name="asphalt">
+          <pose>0 0 0.026 0 0 0</pose>
+          <geometry><box><size>60 9 0.05</size></box></geometry>
+          <material><ambient>0.12 0.12 0.12 1</ambient><diffuse>0.16 0.16 0.16 1</diffuse></material>
+        </visual>
+        <visual name="center_line">
+          <pose>0 0 0.055 0 0 0</pose>
+          <geometry><box><size>60 0.09 0.01</size></box></geometry>
+          <material><ambient>0.9 0.75 0.05 1</ambient><diffuse>0.9 0.75 0.05 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- A photorealistic Gazebo car makes the COCO YOLO `car` detection meaningful. -->
+    <include>
+      <name>landing_vehicle</name>
+      <uri>model://prius_hybrid</uri>
+      <pose>8 -2.2 0.05 0 0 0</pose>
+      <static>true</static>
+    </include>
+
+    <!-- Flat roof pad: collision surface for landing, above the Prius roof. -->
+    <model name="vehicle_roof_pad">
+      <static>true</static>
+      <pose>8 -2.2 1.62 0 0 0</pose>
+      <link name="pad">
+        <collision name="collision"><geometry><box><size>2.3 1.65 0.08</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>2.3 1.65 0.08</size></box></geometry><material><ambient>0.08 0.08 0.1 1</ambient><diffuse>0.12 0.12 0.16 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- Existing XTDrone AprilTag 36h11 id=0, placed flat on the car roof. -->
+    <include>
+      <name>vehicle_apriltag_0</name>
+      <uri>model://apriltag3-5/marker0</uri>
+      <pose>8 -2.2 1.67 0 0 0</pose>
+    </include>
+
+    <!-- People beside the road; their paths stay outside the landing area. -->
+    <actor name="pedestrian_1">
+      <pose>5 3.2 0 0 0 -1.57</pose>
+      <skin><filename>walk.dae</filename><scale>1.0</scale></skin>
+      <animation name="walking"><filename>walk.dae</filename><scale>1.0</scale><interpolate_x>true</interpolate_x></animation>
+      <script><loop>true</loop><delay_start>0</delay_start><auto_start>true</auto_start>
+        <trajectory id="0" type="walking"><waypoint><time>0</time><pose>5 3.2 0 0 0 -1.57</pose></waypoint><waypoint><time>12</time><pose>12 3.2 0 0 0 -1.57</pose></waypoint><waypoint><time>24</time><pose>5 3.2 0 0 0 1.57</pose></waypoint></trajectory>
+      </script>
+    </actor>
+    <actor name="pedestrian_2">
+      <pose>11 -4.0 0 0 0 1.57</pose>
+      <skin><filename>walk.dae</filename><scale>1.0</scale></skin>
+      <animation name="walking"><filename>walk.dae</filename><scale>1.0</scale><interpolate_x>true</interpolate_x></animation>
+      <script><loop>true</loop><delay_start>2</delay_start><auto_start>true</auto_start>
+        <trajectory id="0" type="walking"><waypoint><time>0</time><pose>11 -4.0 0 0 0 1.57</pose></waypoint><waypoint><time>10</time><pose>4 -4.0 0 0 0 1.57</pose></waypoint><waypoint><time>20</time><pose>11 -4.0 0 0 0 -1.57</pose></waypoint></trajectory>
+      </script>
+    </actor>
+  </world>
+</sdf>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="motion_test_camera_model">
+    <static>true</static>
+    <!-- Gazebo camera looks along its +X axis; +90 degree pitch points down. -->
+    <pose>17.5 0 15 0 1.57079632679 0</pose>
+    <link name="camera_link">
+      <sensor name="camera" type="camera">
+        <camera>
+          <horizontal_fov>1.0471975512</horizontal_fov>
+          <image><width>1280</width><height>720</height><format>R8G8B8</format></image>
+          <clip><near>0.1</near><far>100</far></clip>
+          <noise><type>gaussian</type><mean>0.0</mean><stddev>0.001</stddev></noise>
+        </camera>
+        <always_on>true</always_on>
+        <update_rate>30</update_rate>
+        <visualize>false</visualize>
+        <plugin name="motion_test_camera_plugin" filename="libgazebo_ros_camera.so">
+          <robotNamespace>/motion_test</robotNamespace>
+          <cameraName>camera</cameraName>
+          <imageTopicName>image_raw</imageTopicName>
+          <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+          <frameName>motion_test_camera</frameName>
+          <updateRate>30.0</updateRate>
+        </plugin>
+      </sensor>
+    </link>
+  </model>
+</sdf>

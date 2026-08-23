@@ -1,0 +1,123 @@
+<launch>
+  <arg name="gui" default="true"/>
+  <arg name="visualize_yolo" default="true"/>
+  <arg name="auto_start" default="true"/>
+  <arg name="use_cpu" default="true"/>
+  <arg name="vehicle_speed" default="0.0"/>
+  <arg name="record_experiment" default="false"/>
+  <arg name="run_id" default="manual"/>
+  <!-- XTDrone's original YOLO human-tracking city: houses, roads and a walking actor. -->
+  <arg name="world" default="$(find vehicle_landing_demo)/worlds/yolo_road_stable.world"/>
+  <arg name="yolo_weight" default="$(find vehicle_landing_demo)/training/vehicle_yolo11s_descent/weights/best.pt"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="paused" value="false"/>
+  </include>
+
+  <!-- The precision-landing demo vehicle. catvehicle1-3 carries one tag36h11 id=0
+       mesh on its roof (package://catvehicle/meshes/apriltag0). -->
+  <param name="tagged_vehicle_sdf"
+         command="$(find vehicle_landing_demo)/scripts/sdf_scale_tag.py $(find vehicle_landing_demo)/models/tagged_vehicle/model.sdf 0.375"/>
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_tagged_vehicle" output="screen"
+        args="-sdf -param tagged_vehicle_sdf -model ugv_0 -x 10 -y 0 -z 0"/>
+
+  <node pkg="vehicle_landing_demo" type="moving_vehicle.py" name="moving_landing_vehicle" output="screen">
+    <!-- Keep this validation scenario static; terminal dead reckoning freezes
+         the last visually estimated AprilTag world coordinate. -->
+    <param name="speed" value="$(arg vehicle_speed)"/>
+    <param name="start_delay" value="38.0"/>
+    <param name="initial_x" value="9.5"/><param name="initial_y" value="0.0"/>
+    <param name="path_length" value="4.0"/>
+  </node>
+
+  <group ns="iris_0">
+    <include file="$(find px4)/launch/single_vehicle_spawn_xtd.launch">
+      <!-- Directly below the 25 m rear-quarter observation point. -->
+      <arg name="x" value="-13"/><arg name="y" value="-6"/><arg name="z" value="0"/>
+      <arg name="R" value="0"/><arg name="P" value="0"/><arg name="Y" value="0"/>
+      <arg name="vehicle" value="iris"/><arg name="sdf" value="iris_downward_camera"/>
+      <arg name="mavlink_udp_port" value="18570"/><arg name="mavlink_tcp_port" value="4560"/>
+      <arg name="cmd" value="$(find vehicle_landing_demo)/scripts/sdf_tilt_camera.py $(find px4)/Tools/sitl_gazebo/models/iris_downward_camera/iris_downward_camera.sdf 4560 13030"/>
+      <arg name="ID" value="0"/><arg name="ID_in_group" value="0"/>
+    </include>
+    <include file="$(find mavros)/launch/px4.launch">
+      <arg name="fcu_url" value="udp://:24540@localhost:34580"/>
+      <arg name="gcs_url" value=""/><arg name="tgt_system" value="1"/><arg name="tgt_component" value="1"/>
+      <arg name="config_yaml" value="$(find mavros)/launch/px4_config_iris_0.yaml"/>
+    </include>
+
+    <node pkg="apriltag_ros" type="apriltag_ros_continuous_node" name="apriltag" output="screen">
+      <rosparam command="load" file="$(find vehicle_landing_demo)/config/apriltag_settings.yaml"/>
+      <rosparam command="load" file="$(find vehicle_landing_demo)/config/apriltag_tags.yaml"/>
+      <remap from="image_rect" to="camera/image_raw"/>
+      <remap from="camera_info" to="camera/camera_info"/>
+      <param name="camera_frame" value="iris_0/camera_link"/>
+      <param name="publish_tag_detections_image" value="true"/>
+    </node>
+  </group>
+
+  <!-- Optical z points 45 degrees forward/down, optical x points body right
+       and optical y points down/back in the aircraft FLU frame. Legacy tf's
+       Euler arguments are ordered yaw, pitch, roll (not roll, pitch, yaw). -->
+  <node pkg="tf" type="static_transform_publisher" name="iris_camera_tf"
+        args="0 0 -0.05 -1.5707963 0 -2.3561945 iris_0/base_link iris_0/camera_link 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="iris_frd_tf"
+        args="0 0 -0.05 3.1415927 0 0 iris_0/base_link iris_0/base_link_frd 100"/>
+
+  <!-- The installed wrapper interprets /use_gpu=true as CPU; retain that compatibility. -->
+  <param name="use_gpu" value="$(arg use_cpu)"/>
+  <node pkg="vehicle_landing_demo" type="vehicle_yolo.py" name="road_yolo" output="screen">
+    <param name="weight_path" value="$(arg yolo_weight)"/>
+    <param name="image_topic" value="/iris_0/camera/image_raw"/>
+    <param name="pub_topic" value="/landing/yolo_boxes"/>
+    <param name="camera_frame" value="iris_0/camera_link"/>
+    <param name="visualize" value="$(arg visualize_yolo)"/>
+    <param name="conf" value="0.3"/>
+    <param name="imgsz" value="1280"/>
+    <param name="min_vehicle_aspect" value="0.15"/>
+    <param name="max_vehicle_aspect" value="2.50"/>
+    <param name="tag_handoff_height" value="6.0"/>
+    <param name="platform_height" value="2.23"/>
+    <param name="debug_dir" value="$(find vehicle_landing_demo)/datasets/descent_audit"/>
+  </node>
+
+  <node pkg="vehicle_landing_demo" type="vehicle_precision_landing.py" name="vehicle_precision_landing" output="screen">
+    <param name="auto_start" value="$(arg auto_start)"/>
+    <param name="staging_x" value="9.45"/><param name="staging_y" value="-0.5"/><param name="cruise_height" value="25.0"/>
+    <param name="tag_frame" value="landing_pad"/><param name="vehicle_timeout" value="1.5"/>
+    <param name="person_pause" value="true"/>
+    <param name="image_width" value="1280"/><param name="image_height" value="720"/>
+    <param name="kp_yolo" value="0.9"/>
+    <param name="kp_glide" value="2.0"/>
+    <param name="max_xy_speed" value="2.5"/>
+    <param name="vehicle_speed" value="0.50"/>
+    <param name="landing_lead_time" value="0.0"/>
+    <param name="landing_forward_offset" value="0.0"/>
+    <param name="final_align_height" value="1.20"/>
+    <param name="final_align_tolerance" value="0.20"/>
+    <param name="demo_ground_truth" value="true"/>
+    <param name="observation_back" value="23.0"/>
+    <param name="observation_side" value="-6.0"/>
+    <param name="platform_height" value="2.23"/>
+    <param name="glide_tolerance" value="1.0"/>
+    <param name="tag_handoff_height" value="6.0"/>
+    <param name="tag_handoff_horizontal" value="3.0"/>
+    <param name="max_tag_correction" value="1.0"/>
+    <param name="descent_speed" value="0.80"/>
+    <param name="tag_filter_alpha" value="0.25"/>
+    <param name="tag_max_jump" value="0.75"/>
+    <param name="dead_reckon_timeout" value="3.0"/>
+  </node>
+
+  <node if="$(arg record_experiment)" pkg="vehicle_landing_demo"
+        type="experiment_recorder.py" name="experiment_recorder"
+        output="screen" required="true">
+    <param name="mode" value="static_baseline"/>
+    <param name="run_id" value="$(arg run_id)"/>
+    <param name="vehicle_speed" value="$(arg vehicle_speed)"/>
+    <param name="output_dir" value="$(find vehicle_landing_demo)/experiments"/>
+    <param name="max_duration" value="150.0"/>
+  </node>
+</launch>

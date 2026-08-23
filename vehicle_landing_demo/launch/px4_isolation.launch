@@ -1,0 +1,21 @@
+<launch>
+  <arg name="gui" default="false"/>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find vehicle_landing_demo)/worlds/yolo_road_stable.world"/>
+    <arg name="gui" value="$(arg gui)"/><arg name="paused" value="false"/>
+  </include>
+  <group ns="iris_0">
+    <include file="$(find px4)/launch/single_vehicle_spawn_xtd.launch">
+      <arg name="x" value="5"/><arg name="y" value="0"/><arg name="z" value="0"/>
+      <arg name="R" value="0"/><arg name="P" value="0"/><arg name="Y" value="0"/>
+      <arg name="vehicle" value="iris"/><arg name="sdf" value="iris_downward_camera"/>
+      <arg name="mavlink_udp_port" value="18570"/><arg name="mavlink_tcp_port" value="4560"/>
+      <arg name="ID" value="0"/><arg name="ID_in_group" value="0"/>
+    </include>
+    <include file="$(find mavros)/launch/px4.launch">
+      <arg name="fcu_url" value="udp://:24540@localhost:34580"/>
+      <arg name="gcs_url" value=""/><arg name="tgt_system" value="1"/><arg name="tgt_component" value="1"/>
+      <arg name="config_yaml" value="$(find mavros)/launch/px4_config_iris_0.yaml"/>
+    </include>
+  </group>
+</launch>

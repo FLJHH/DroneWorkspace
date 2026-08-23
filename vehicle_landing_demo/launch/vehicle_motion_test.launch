@@ -1,0 +1,71 @@
+<launch>
+  <arg name="gui" default="false"/>
+  <arg name="vehicle_speed" default="0.5"/>
+  <arg name="duration" default="45.0"/>
+  <arg name="run_id" default="vehicle_motion_0p5"/>
+  <arg name="visualize_yolo" default="false"/>
+  <arg name="use_cpu" default="true"/>
+  <arg name="world" default="$(find vehicle_landing_demo)/worlds/yolo_road_stable.world"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="paused" value="false"/>
+  </include>
+
+  <param name="tagged_vehicle_sdf"
+         command="$(find vehicle_landing_demo)/scripts/sdf_scale_tag.py $(find vehicle_landing_demo)/models/tagged_vehicle/model.sdf 0.375"/>
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_tagged_vehicle" output="screen"
+        args="-sdf -param tagged_vehicle_sdf -model ugv_0 -x 10 -y 0 -z 0"/>
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_motion_test_camera" output="screen"
+        args="-sdf -file $(find vehicle_landing_demo)/models/motion_test_camera/model.sdf -model motion_test_camera"/>
+
+  <node pkg="vehicle_landing_demo" type="moving_vehicle.py"
+        name="moving_landing_vehicle" output="screen">
+    <param name="speed" value="$(arg vehicle_speed)"/>
+    <param name="start_delay" value="2.0"/>
+    <param name="initial_y" value="0.0"/>
+    <param name="longitudinal_kp" value="5000.0"/>
+    <param name="longitudinal_ki" value="8000.0"/>
+    <param name="drive_force_limit" value="18000.0"/>
+  </node>
+
+  <!-- Optical frame: +z points down, +x maps to -world-y, +y maps to -world-x. -->
+  <node pkg="tf" type="static_transform_publisher" name="motion_test_camera_tf"
+        args="17.5 0 15 -1.57079632679 0 3.14159265359 map motion_test_camera 100"/>
+
+  <node pkg="apriltag_ros" type="apriltag_ros_continuous_node"
+        name="motion_test_apriltag" output="screen">
+    <rosparam command="load" file="$(find vehicle_landing_demo)/config/apriltag_settings.yaml"/>
+    <rosparam command="load" file="$(find vehicle_landing_demo)/config/apriltag_tags.yaml"/>
+    <remap from="image_rect" to="/motion_test/camera/image_raw"/>
+    <remap from="camera_info" to="/motion_test/camera/camera_info"/>
+    <param name="camera_frame" value="motion_test_camera"/>
+    <param name="publish_tag_detections_image" value="false"/>
+  </node>
+
+  <param name="use_gpu" value="$(arg use_cpu)"/>
+  <node pkg="vehicle_landing_demo" type="vehicle_yolo.py"
+        name="motion_test_yolo" output="screen">
+    <param name="weight_path" value="$(find vehicle_landing_demo)/training/vehicle_yolo11s_descent/weights/best.pt"/>
+    <param name="image_topic" value="/motion_test/camera/image_raw"/>
+    <param name="pub_topic" value="/landing/yolo_boxes"/>
+    <param name="camera_frame" value="motion_test_camera"/>
+    <param name="visualize" value="$(arg visualize_yolo)"/>
+    <param name="conf" value="0.3"/>
+    <param name="imgsz" value="1280"/>
+    <param name="min_vehicle_aspect" value="0.15"/>
+    <param name="max_vehicle_aspect" value="2.50"/>
+    <param name="tag_handoff_height" value="0.0"/>
+    <param name="platform_height" value="2.23"/>
+    <param name="debug_dir" value=""/>
+  </node>
+
+  <node pkg="vehicle_landing_demo" type="vehicle_motion_recorder.py"
+        name="vehicle_motion_recorder" output="screen" required="true">
+    <param name="run_id" value="$(arg run_id)"/>
+    <param name="target_speed" value="$(arg vehicle_speed)"/>
+    <param name="duration" value="$(arg duration)"/>
+    <param name="output_file" value="$(find vehicle_landing_demo)/experiments/vehicle_motion_0p5.csv"/>
+  </node>
+</launch>

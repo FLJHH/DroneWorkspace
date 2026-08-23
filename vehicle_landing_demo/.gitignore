@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.sim_ros_logs/
+# Raw ROS process logs are transient; keep the curated CSV/JSON experiment data.
+experiments/logs/ros/
+.catkin_tools/
+.idea/
+.vscode/
+*.bag
+*.ulg
+
+# Generated/audit datasets are not required to run the demo.
+datasets/descent_audit/
+datasets/images/
+datasets/labels/
+datasets/vehicle/
+datasets/vehicle_robust/
+*.cache
+
+# Training outputs are large. Keep only the runtime model and compact metrics.
+training/**/weights/last.pt
+training/vehicle_yolo11s/weights/
+training/vehicle_yolo11s_robust/weights/
+training/**/train_batch*.jpg
+training/**/val_batch*.jpg

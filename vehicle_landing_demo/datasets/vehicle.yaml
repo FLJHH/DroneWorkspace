@@ -1,0 +1,5 @@
+path: /home/fenglijun/DroneWorkspace/vehicle_landing_demo/datasets/vehicle
+train: images/train
+val: images/val
+names:
+  0: vehicle

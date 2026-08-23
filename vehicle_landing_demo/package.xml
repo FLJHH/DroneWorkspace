@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>vehicle_landing_demo</name>
+  <version>0.1.0</version>
+  <description>YOLO tracking and AprilTag precision landing on a moving road vehicle.</description>
+  <maintainer email="user@localhost">DroneWorkspace user</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>apriltag_ros</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>gazebo_msgs</exec_depend>
+  <exec_depend>mavros</exec_depend>
+  <exec_depend>mavros_msgs</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>yolov11_ros</exec_depend>
+  <exec_depend>yolov11_ros_msgs</exec_depend>
+</package>
