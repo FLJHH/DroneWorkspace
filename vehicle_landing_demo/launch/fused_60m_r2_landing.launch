@@ -1,0 +1,16 @@
+<launch>
+  <arg name="gui" default="true"/><arg name="visualize_yolo" default="true"/>
+  <node pkg="vehicle_landing_demo" type="r1_image_conditioner.py" name="r2_image_conditioner" output="screen">
+    <param name="delay_s" value="0.10"/><param name="noise_std" value="3.0"/>
+    <param name="brightness_amplitude" value="0.08"/><param name="brightness_hz" value="0.25"/>
+    <param name="backlight_alpha" value="0.78"/><param name="backlight_beta" value="50"/>
+    <param name="blur_pixels" value="5"/><param name="dropout_rate" value="0.02"/>
+    <param name="occlusion_fraction" value="0.10"/><param name="seed" value="20260903"/>
+  </node>
+  <include file="$(find vehicle_landing_demo)/launch/fused_50m_landing.launch">
+    <arg name="gui" value="$(arg gui)"/><arg name="visualize_yolo" value="$(arg visualize_yolo)"/>
+    <arg name="world_name" value="$(find vehicle_landing_demo)/worlds/yolo_road_r2.world"/>
+    <arg name="image_topic" value="/iris_0/camera/r1/image_raw"/><arg name="camera_info_topic" value="/iris_0/camera/r1/camera_info"/>
+    <arg name="cruise_clearance" value="60.0"/><arg name="spawn_x" value="-50"/><arg name="output_name" value="fused_60m_R2_landing.csv"/>
+  </include>
+</launch>

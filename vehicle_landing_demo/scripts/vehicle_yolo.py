@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 import rospy
 from sensor_msgs.msg import Image
-from std_msgs.msg import Header
+from std_msgs.msg import Float32, Header, String
 from gazebo_msgs.msg import ModelStates
 from ultralytics import YOLO
 from yolov11_ros_msgs.msg import BoundingBox, BoundingBoxes
@@ -17,6 +17,16 @@ from yolov11_ros_msgs.msg import BoundingBox, BoundingBoxes
 class VehicleYolo:
     # COCO: person=0, car=2, bus=5, truck=7.
     CLASSES = [0, 2, 5, 7]
+    PHASE_TITLES = {
+        "WAIT_FCU": "Waiting for FCU",
+        "TAKEOFF": "Takeoff",
+        "TRANSIT": "Transit to observation point",
+        "ACQUIRE": "YOLO vehicle acquisition",
+        "TAG_APPROACH": "AprilTag precision approach",
+        "TAG_DEAD_RECKON": "AprilTag lost - dead reckoning",
+        "AUTO_LAND": "Auto landing",
+        "DONE": "Touchdown complete",
+    }
 
     def __init__(self):
         self.frame_id = rospy.get_param("~camera_frame", "")
@@ -28,6 +38,8 @@ class VehicleYolo:
         self.tag_handoff_height = float(rospy.get_param("~tag_handoff_height", 3.0))
         self.platform_height = float(rospy.get_param("~platform_height", 2.23))
         self.height_above_roof = float("inf")
+        self.phase = "WAIT_FCU"
+        self.fusion_weight = 0.0
         self.debug_dir = rospy.get_param("~debug_dir", "")
         self.last_debug_height = None
         if self.debug_dir:
@@ -44,7 +56,20 @@ class VehicleYolo:
             rospy.get_param("~image_topic", "/iris_0/camera/image_raw"),
             Image, self.image_cb, queue_size=1, buff_size=52428800)
         rospy.Subscriber("/gazebo/model_states", ModelStates, self.models_cb, queue_size=1)
+        rospy.Subscriber("/landing/phase", String, self.phase_cb, queue_size=1)
+        rospy.Subscriber("/landing/fusion_weight", Float32,
+                         self.fusion_weight_cb, queue_size=1)
         self.device = device
+
+    def phase_cb(self, message):
+        self.phase = message.data
+
+    def fusion_weight_cb(self, message):
+        self.fusion_weight = message.data
+
+    def phase_title(self):
+        return self.PHASE_TITLES.get(
+            self.phase, "Flight state: {}".format(self.phase or "UNKNOWN"))
 
     def models_cb(self, message):
         """Altitude gate for the explicit YOLO-to-AprilTag handoff."""
@@ -134,10 +159,19 @@ class VehicleYolo:
             cv2.putText(annotated, "vehicle {:.2f}".format(confidence),
                         (x1, max(24, y1 - 8)), cv2.FONT_HERSHEY_SIMPLEX,
                         0.7, (0, 200, 0), 2, cv2.LINE_AA)
-        if self.height_above_roof <= self.tag_handoff_height:
-            cv2.putText(annotated, "AprilTag precision phase",
-                        (24, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
-                        (0, 180, 255), 2, cv2.LINE_AA)
+        phase_title = self.phase_title()
+        cv2.putText(annotated, phase_title, (24, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.9,
+                    (0, 180, 255), 2, cv2.LINE_AA)
+        cv2.putText(annotated, "AprilTag fusion: {:.0f}%".format(
+            100.0 * self.fusion_weight), (24, 76),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 180, 255), 2, cv2.LINE_AA)
+        height_text = ("Height above roof: {:.2f} m".format(self.height_above_roof)
+                       if math.isfinite(self.height_above_roof)
+                       else "Height above roof: --")
+        cv2.putText(annotated, height_text, (24, 110),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.75,
+                    (0, 180, 255), 2, cv2.LINE_AA)
         output = Image()
         output.header = Header(stamp=rospy.Time.now(), frame_id=self.frame_id)
         output.height, output.width = image.height, image.width
@@ -145,8 +179,11 @@ class VehicleYolo:
         output.data = annotated.tobytes()
         self.image_pub.publish(output)
         if self.visualize:
-            cv2.imshow("YOLO vehicle/person", cv2.resize(
+            window_name = "Landing camera"
+            cv2.imshow(window_name, cv2.resize(
                 annotated, (image.width // 2, image.height // 2)))
+            if hasattr(cv2, "setWindowTitle"):
+                cv2.setWindowTitle(window_name, phase_title)
             cv2.waitKey(1)
 
 

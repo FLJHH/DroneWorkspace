@@ -1,0 +1,26 @@
+<launch>
+  <arg name="gui" default="true"/><arg name="visualize_yolo" default="true"/>
+  <node pkg="vehicle_landing_demo" type="r1_image_conditioner.py" name="r2_physical_image_conditioner" output="screen">
+    <param name="delay_s" value="0.08"/><param name="delay_jitter_s" value="0.02"/>
+    <param name="noise_std" value="2.0"/><param name="brightness_amplitude" value="0.0"/>
+    <param name="backlight_alpha" value="0.88"/><param name="backlight_beta" value="28"/>
+    <param name="exposure_time_s" value="0.008333"/><param name="focal_px" value="1108.5"/>
+    <param name="blur_pixels" value="1"/><param name="dropout_rate" value="0.01"/>
+    <param name="angular_dropout_scale" value="0.08"/><param name="dropout_max" value="0.05"/>
+    <param name="tag_occlusion_fraction" value="0.10"/><param name="tag_size_m" value="0.6"/>
+    <param name="occlusion_fraction" value="0.0"/><param name="seed" value="20260905"/>
+  </node>
+  <node pkg="vehicle_landing_demo" type="moving_vehicle.py" name="moving_landing_vehicle" output="screen">
+    <param name="speed" value="1.5"/><param name="start_delay" value="40.0"/><param name="initial_y" value="0.0"/>
+    <param name="longitudinal_kp" value="5000.0"/><param name="longitudinal_ki" value="8000.0"/><param name="drive_force_limit" value="18000.0"/>
+  </node>
+  <include file="$(find vehicle_landing_demo)/launch/fused_50m_landing.launch">
+    <arg name="gui" value="$(arg gui)"/><arg name="visualize_yolo" value="$(arg visualize_yolo)"/>
+    <arg name="world_name" value="$(find vehicle_landing_demo)/worlds/yolo_road_r2_physical.world"/>
+    <arg name="image_topic" value="/iris_0/camera/r1/image_raw"/><arg name="camera_info_topic" value="/iris_0/camera/r1/camera_info"/>
+    <arg name="camera_pitch_offset_deg" value="1.5"/><arg name="cruise_clearance" value="60.0"/><arg name="spawn_x" value="-50"/>
+    <arg name="output_name" value="fused_60m_R2_physical_landing.csv"/>
+  </include>
+  <rosparam param="/fused_glide_landing/coarse_drift_std">0.3</rosparam>
+  <rosparam param="/fused_glide_landing/height_noise_std">0.1</rosparam>
+</launch>

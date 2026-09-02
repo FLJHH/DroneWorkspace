@@ -13,6 +13,11 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package()
 
 catkin_install_python(PROGRAMS
+  scripts/apriltag_height_scan.py
+  scripts/apriltag_dynamic_scan.py
+  scripts/apriltag_viewpoint_scan.py
+  scripts/fused_glide_landing.py
+  scripts/r1_image_conditioner.py
   scripts/moving_vehicle.py
   scripts/experiment_recorder.py
   scripts/vehicle_motion_recorder.py
